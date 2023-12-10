@@ -1015,40 +1015,60 @@ const possibles = [
   { word: "nine", value: "9" },
 ];
 
-const findNumberByWord = (line, id) => {
-  const newLine = line.slice(0, id);
-  let word = "";
-  let numb = "";
-  const possibleWords = possibles.map((item) => item.word);
+const checkWords = (arr, word) => {
+  let result = {
+    answer: false,
+    palabra: "",
+    number: 0,
+  };
+  arr.map((item) => {
+    if (word.includes(item.word)) {
+      result.answer = true;
+      result.palabra = item.word;
+      result.number = item.value;
+    }
+  });
+  return result;
+};
 
-  for (let i = 0; i < newLine.length; i++) {
-    word = word.concat("", newLine[i]);
-    if (possibleWords.includes(word)) {
-      return possibles.find((item) => item.word === word).value;
+const findNumber = (line, backwards) => {
+  let word = "";
+
+  const possibleWords = possibles.map((item) => item.word);
+  const possibleNumbers = possibles.map((item) => item.value);
+
+  if (!backwards) {
+    for (let i = 0; i < line.length; i++) {
+      word = word.concat("", line[i]);
+      if (possibleNumbers.includes(line[i])) {
+        return line[i];
+      } else if (possibleWords.includes(word)) {
+        return possibles.find((item) => item.word === word).value;
+      }
+    }
+  } else {
+    for (let j = line.length - 1; j >= 0; j--) {
+      word = line[j] + word;
+
+      if (possibleNumbers.includes(line[j])) {
+        return line[j];
+      } else if (checkWords(possibles, word).answer == true) {
+        return checkWords(possibles, word).number;
+      }
     }
   }
 };
 
 const inputArr = input.split("\n");
 
-console.log(findNumberByWord(inputArr[0], 10));
+// console.log(checkWords(possibles, "sevenvvqm"));
+
+console.log(findNumber(inputArr[4], true));
 
 inputArr.map((line) => {
   let valor = "";
-  const possibleNumbers = possibles.map((item) => item.value);
-  for (let i = 0; i < line.length; i++) {
-    if (possibleNumbers.includes(line[i])) {
-      valor = valor + line[i];
-      break;
-    }
-  }
-  for (let j = line.length; j >= 0; j--) {
-    if (possibleNumbers.includes(line[j])) {
-      valor = valor + line[j];
+  valor = findNumber(line) + findNumber(line, true);
 
-      break;
-    }
-  }
   values.push(valor);
 });
 
@@ -1057,4 +1077,14 @@ const result = values.reduce(
   (accum, current) => Number(accum) + Number(current),
   0
 );
-console.log(result);
+
+const sumar = () => {
+  let resultado = 0;
+  values.map((num) => {
+    resultado = resultado + Number(num);
+  });
+  return resultado;
+};
+
+console.log("resultado", sumar());
+console.log(values);
