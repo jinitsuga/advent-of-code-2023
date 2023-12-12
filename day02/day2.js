@@ -112,80 +112,82 @@ const createGame = (string) => {
   return { id: gameId, game: game };
 };
 
-// console.log(findGame(input[0]));
+const firstGame = createGame(input[0]);
+
+let maxBlue = 1;
+let maxRed = 1;
+let maxGreen = 1;
 
 const checkNumbers = (string) => {
+  // Takes an entire game (multiple hands) as param
   // should return false if inadequate or a number if adequate
+
   const cubes = string.split(`,`);
-  const checks = cubes.map((elem) => {
+
+  const hands = cubes.map((elem) => {
     const hand = elem.trim();
 
     if (hand.includes("blue")) {
       const space = hand.indexOf(" ");
       const blueNumber = Number(hand.slice(0, space));
 
-      if (blueNumber > 14) {
-        return false;
-      } else {
-        return `${blueNumber} blue`;
+      if (blueNumber > maxBlue) {
+        maxBlue = blueNumber;
       }
     }
     if (hand.includes("red")) {
       const space = hand.indexOf(" ");
       const redNumber = Number(hand.slice(0, space));
-      if (redNumber > 12) {
-        return false;
-      } else {
-        return `${redNumber} red`;
+
+      if (redNumber > maxRed) {
+        maxRed = redNumber;
       }
     }
     if (hand.includes("green")) {
       const space = hand.indexOf(" ");
       const greenNumber = Number(hand.slice(0, space));
-      if (greenNumber > 13) {
-        return false;
-      } else {
-        return `${greenNumber} green`;
+
+      if (greenNumber > maxGreen) {
+        maxGreen = greenNumber;
       }
     }
   });
-  return checks;
+
+  const red = maxRed;
+  const blue = maxBlue;
+  const green = maxGreen;
+
+  return maxBlue * maxRed * maxGreen;
 };
+
+// console.log(checkNumbers(firstGame.game));
 
 const solveGame = (string, id) => {
   const hands = string.split(";");
 
   // if checkNumbers is false, do nothing. If true, add game id
   const solving = hands.map((hand) => {
-    const result = checkNumbers(hand).map((elem) => {
-      if (elem === false) {
-        return false;
-      } else {
-        return elem;
-      }
-    });
-
-    if (result.includes(false)) {
-      return false;
-    }
+    const result = checkNumbers(hand);
+    return result;
   });
 
-  if (!solving.includes(false)) {
-    return id;
-  } else {
-    return false;
-  }
+  maxBlue = 1;
+  maxRed = 1;
+  maxGreen = 1;
+
+  return solving[solving.length - 1];
 };
 
-const createdGames = input.map((elem) => createGame(elem));
+console.log(solveGame(firstGame.game, firstGame.id));
 
-let result = 0;
+const createdGames = input.map((elem) => createGame(elem));
 
 const values = createdGames.map((game) => {
   const solvedGame = solveGame(game.game, game.id);
   return Number(solvedGame);
-  //   console.log(solvedGame);
 });
-const filtered = values.filter((elem) => elem != false);
 
-console.log(filtered.reduce((accum, curr) => accum + curr, 0));
+// const filtered = values.filter((elem) => elem != false);
+
+const answer = values.reduce((accum, curr) => accum + curr, 0);
+console.log(answer);
