@@ -1039,12 +1039,19 @@ const findNumber = (line, backwards) => {
 
   if (!backwards) {
     for (let i = 0; i < line.length; i++) {
-      word = word.concat("", line[i]);
+      word += line[i];
+
       if (possibleNumbers.includes(line[i])) {
         return line[i];
-      } else if (possibleWords.includes(word)) {
-        return possibles.find((item) => item.word === word).value;
+      } else if (checkWords(possibles, word).answer == true) {
+        return checkWords(possibles, word).number;
       }
+      // word = word.concat("", line[i]);
+      // if (possibleNumbers.includes(line[i])) {
+      //   return line[i];
+      // } else if (possibleWords.includes(word)) {
+      //   return possibles.find((item) => item.word === word).value;
+      // }
     }
   } else {
     for (let j = line.length - 1; j >= 0; j--) {
